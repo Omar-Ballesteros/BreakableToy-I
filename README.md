@@ -6,8 +6,11 @@ This is a To-do list API built with spingboot, using the Controller-Service-Repo
 
 ## Features (Currently implemented)
 
-Define a Todo model
-Implement the Repository Layer to manage tasks in memory
+Add new Todo
+List Todos
+Search Todo by Id
+Delete Todo by Id
+Mark Todo as done/undone
 
 ##How to run the Project?
 
