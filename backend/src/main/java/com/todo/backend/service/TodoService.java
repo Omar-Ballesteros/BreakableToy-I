@@ -5,7 +5,9 @@ import com.todo.backend.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TodoService implements ITodoService {
@@ -32,5 +34,28 @@ public class TodoService implements ITodoService {
     public void deleteTodo(Todo todo) {
         todoRepository.delete(todo.getId());
 
+    }
+
+    @Override
+    public boolean toggleCompletion(String id) {
+        Optional<Todo> todoOptional = todoRepository.findById(id);
+
+        if (todoOptional.isPresent()) {
+            Todo todo = todoOptional.get();
+
+            if (todo.getDone()) {
+                todo.setDone(false);
+                todo.setDoneDate(null);
+            } else {
+                todo.setDone(true);
+                todo.setDoneDate(LocalDate.now());
+            }
+            todo.setDone(true);
+            todo.setDoneDate(LocalDate.now());
+
+            todoRepository.save(todo);
+            return true;
+        }
+        return false;
     }
 }
