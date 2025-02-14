@@ -50,8 +50,6 @@ public class TodoService implements ITodoService {
                 todo.setDone(true);
                 todo.setDoneDate(LocalDate.now());
             }
-            todo.setDone(true);
-            todo.setDoneDate(LocalDate.now());
 
             todoRepository.save(todo);
             return true;
