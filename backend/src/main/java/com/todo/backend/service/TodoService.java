@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TodoService implements ITodoService {
@@ -27,6 +28,15 @@ public class TodoService implements ITodoService {
 
     @Override
     public Todo saveTodo(Todo todo) {
+
+        //Assign unique iD
+        String id = UUID.randomUUID().toString();
+        todo.setId(id);
+
+        //Establish creation date
+        if (todo.getCreationDate() == null) {
+            todo.setCreationDate(LocalDate.now());
+        }
         return todoRepository.save(todo);
     }
 
