@@ -21,7 +21,7 @@ public class Todo {
     private String priority;
     private LocalDate creationDate;
 
-    public Todo(String todoText, LocalDate dueDate, String priority) {
+    public Todo(String todoText, LocalDate dueDate, boolean b, String priority) {
         this.id = UUID.randomUUID().toString();
         this.todoText = todoText;
         this.dueDate = dueDate;
