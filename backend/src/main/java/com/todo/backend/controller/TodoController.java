@@ -1,11 +1,14 @@
 package com.todo.backend.controller;
 
+import com.todo.backend.exception.ResourceNotFoundException;
 import com.todo.backend.model.Todo;
 import com.todo.backend.service.ITodoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 //http://localhost:9090/api/
@@ -26,6 +29,29 @@ public class TodoController {
     @PostMapping
     public Todo createTodo(@RequestBody Todo todo) {
         return todoService.saveTodo(todo);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Todo>
+    getTodoById(@PathVariable String id){
+        Todo todo = todoService.searchTodoById(id);
+        if(todo == null)
+            throw new ResourceNotFoundException("Id not found:" + id);
+        return ResponseEntity.ok(todo);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Todo>
+    updateTodo(@PathVariable String id, @RequestBody Todo updatedTodo){
+        Todo todo = todoService.searchTodoById(id);
+        if(todo == null)
+            throw new ResourceNotFoundException("Id not found:" + id);
+        todo.setTodoText(updatedTodo.getTodoText());
+        todo.setDueDate(updatedTodo.getDueDate());
+        todo.setPriority(updatedTodo.getPriority());
+        todo.setDone(updatedTodo.getDone());
+        todoService.saveTodo(todo);
+        return ResponseEntity.ok(todo);
     }
 
 }

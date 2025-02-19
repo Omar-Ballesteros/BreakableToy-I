@@ -30,8 +30,8 @@ public class TodoService implements ITodoService {
     public Todo saveTodo(Todo todo) {
 
         //Assign unique iD
-        String id = UUID.randomUUID().toString();
-        todo.setId(id);
+        if (todo.getId() == null)
+             todo.setId(UUID.randomUUID().toString());
 
         //Establish creation date
         if (todo.getCreationDate() == null) {
