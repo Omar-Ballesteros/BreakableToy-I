@@ -27,6 +27,13 @@ public class TodoRepository {
     }
 
     public Todo save(Todo todo) {
+
+        for (int i = 0; i < todos.size(); i++) {
+            if(todos.get(i).getId().equals(todo.getId())) {
+                todos.set(i, todo);
+                return todo;
+            }
+        }
         todos.add(todo);
         return todo;
     }
