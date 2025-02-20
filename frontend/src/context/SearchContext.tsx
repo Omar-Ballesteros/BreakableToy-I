@@ -6,6 +6,9 @@ import React, {
   useState,
 } from "react";
 
+type SortBy = "dueDate" | "priority" | "";
+type SortOrder = "asc" | "desc";
+
 type SearchContextType = {
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
@@ -13,6 +16,10 @@ type SearchContextType = {
   setPriorityFilter: Dispatch<SetStateAction<string>>;
   stateFilter: string;
   setStateFilter: Dispatch<SetStateAction<string>>;
+  sortBy: SortBy;
+  setSortBy: Dispatch<SetStateAction<SortBy>>;
+  sortOrder: SortOrder;
+  setSortOrder: Dispatch<SetStateAction<SortOrder>>;
 };
 
 export const SearchContext = createContext<SearchContextType | null>(null);
@@ -25,6 +32,8 @@ export function SearchContextProvider({
   const [search, setSearch] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [stateFilter, setStateFilter] = useState("all");
+  const [sortBy, setSortBy] = useState<SortBy>("");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
   return (
     <SearchContext.Provider
@@ -35,6 +44,10 @@ export function SearchContextProvider({
         setPriorityFilter,
         stateFilter,
         setStateFilter,
+        sortBy,
+        setSortBy,
+        sortOrder,
+        setSortOrder,
       }}
     >
       {children}

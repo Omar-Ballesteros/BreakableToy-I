@@ -6,8 +6,15 @@ import { useSearchContext } from "../context/SearchContext";
 const ITEMS_PER_PAGE = 10;
 
 export default function TodoList() {
-  const { search, priorityFilter, stateFilter } = useSearchContext();
-
+  const {
+    search,
+    priorityFilter,
+    stateFilter,
+    sortBy,
+    sortOrder,
+    setSortOrder,
+    setSortBy,
+  } = useSearchContext();
   const { todos } = useTodoContext();
 
   const filteredTodos = todos.filter((todo) => {
@@ -25,12 +32,28 @@ export default function TodoList() {
     return matchesSearch && matchesPriority && matchesState;
   });
 
+  // Lógica de ordenación
+  const sortedTodos = filteredTodos.sort((a, b) => {
+    if (sortBy === "") return 0; // Si no hay criterio de ordenación, no hacer nada
+
+    const valueA =
+      sortBy === "dueDate" && a.dueDate ? new Date(a.dueDate) : a.priority;
+    const valueB =
+      sortBy === "dueDate" && b.dueDate ? new Date(b.dueDate) : b.priority;
+
+    if (sortOrder === "asc") {
+      return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+    } else {
+      return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
+    }
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(filteredTodos.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(sortedTodos.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const displayedTodos = filteredTodos.slice(startIndex, endIndex);
+  const displayedTodos = sortedTodos.slice(startIndex, endIndex);
 
   const getPaginationNumbers = () => {
     const pages = [];
@@ -64,9 +87,35 @@ export default function TodoList() {
             </th>
             <th className="p-4 border border-gray-400" scope="col">
               Priority
+              <button
+                className="m-4"
+                onClick={() => {
+                  setSortBy("priority");
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                }}
+              >
+                {sortBy === "priority"
+                  ? sortOrder === "asc"
+                    ? "↑"
+                    : "↓"
+                  : "↑↓"}
+              </button>
             </th>
             <th className="p-4 border border-gray-400" scope="col">
               Due Date
+              <button
+                className="m-4"
+                onClick={() => {
+                  setSortBy("dueDate");
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                }}
+              >
+                {sortBy === "dueDate"
+                  ? sortOrder === "asc"
+                    ? "↑"
+                    : "↓"
+                  : "↑↓"}
+              </button>
             </th>
             <th className="p-4 border border-gray-400" scope="col">
               Actions
