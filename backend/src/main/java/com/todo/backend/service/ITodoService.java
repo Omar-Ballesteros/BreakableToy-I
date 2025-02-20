@@ -12,6 +12,4 @@ public interface ITodoService {
     public Todo saveTodo(Todo todo);
 
     public void deleteTodo(Todo todo);
-
-    public boolean toggleCompletion(String id);
 }
