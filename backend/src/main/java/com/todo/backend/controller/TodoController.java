@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,30 @@ public class TodoController {
         todo.setPriority(updatedTodo.getPriority());
         todo.setDone(updatedTodo.getDone());
         todoService.saveTodo(todo);
+        return ResponseEntity.ok(todo);
+    }
+
+    @PostMapping("/{id}/done")
+    public ResponseEntity<Todo>
+    markAsDone(@PathVariable String id) {
+        Todo todo = todoService.searchTodoById(id);
+
+        todo.setDone(true);
+        todo.setDoneDate(LocalDate.now());
+        todoService.saveTodo(todo);
+
+        return ResponseEntity.ok(todo);
+    }
+
+    @PutMapping("/{id}/undone")
+    public ResponseEntity<Todo>
+    markAsUndone(@PathVariable String id) {
+        Todo todo = todoService.searchTodoById(id);
+
+        todo.setDone(false);
+        todo.setDoneDate(null);
+        todoService.saveTodo(todo);
+
         return ResponseEntity.ok(todo);
     }
 
