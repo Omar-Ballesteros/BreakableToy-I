@@ -2,9 +2,15 @@ import TodoList from "./components/TodoList";
 import SearchTodoForm from "./components/SearchTodoForm";
 import AddTodoModal from "./components/AddTodoModal";
 import { useModalContext } from "./context/ModalContext";
+import TaskMetrics from "./components/Metrics";
 
 function App() {
-  const { setOpen } = useModalContext();
+  const { setOpen, setId } = useModalContext();
+
+  const handleAdd = () => {
+    setId("");
+    setOpen(true);
+  };
 
   return (
     <main className="py-10 h-screen space-y-5 text-center">
@@ -13,10 +19,7 @@ function App() {
         <SearchTodoForm />
       </div>
       <div className="p-4">
-        <button
-          className="bg-black text-white px-4 py-2"
-          onClick={() => setOpen(true)}
-        >
+        <button className="bg-black text-white px-4 py-2" onClick={handleAdd}>
           Add Todo
         </button>
         <AddTodoModal />

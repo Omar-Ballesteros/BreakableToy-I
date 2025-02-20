@@ -40,6 +40,10 @@ export default function AddTodoModal() {
       setTodoText(todo.todoText);
       setPriority(todo.priority);
       setDueDate(todo?.dueDate || "");
+    } else {
+      setTodoText("");
+      setPriority("medium");
+      setDueDate("");
     }
   }, [todo, id]);
 
