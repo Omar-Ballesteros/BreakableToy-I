@@ -28,3 +28,8 @@ export const setAsUnDone = async (id: string) => {
   const response = await axios.put<Todo>(`${API_URL}/${id}/undone`);
   return response.data;
 };
+
+export const deleteTodo = async (id: string) => {
+  const response = await axios.delete(`${API_URL}/${id}`);
+  return response.data;
+};

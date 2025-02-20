@@ -1,7 +1,8 @@
 import { Todo } from "../types/todo";
 import { useModalContext } from "../context/ModalContext";
 import { useState } from "react";
-import { setAsDone, setAsUnDone } from "../api/api";
+import { deleteTodo, setAsDone, setAsUnDone } from "../api/api";
+import { useTodoContext } from "../context/TodoContext";
 
 interface TodoItemProps {
   todo: Todo;
@@ -9,6 +10,7 @@ interface TodoItemProps {
 
 export default function TodoItem({ todo }: TodoItemProps) {
   const { setOpen, setId } = useModalContext();
+  const { refetchTodos } = useTodoContext();
   const [isDone, setIsDone] = useState(todo.done);
 
   const handleEdit = () => {
@@ -26,6 +28,15 @@ export default function TodoItem({ todo }: TodoItemProps) {
       setIsDone(!isDone);
     } catch (error) {
       console.error("Error changing todo state", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteTodo(todo.id);
+      refetchTodos();
+    } catch (error) {
+      console.error("Error deleting todo", error);
     }
   };
 
@@ -52,6 +63,7 @@ export default function TodoItem({ todo }: TodoItemProps) {
         <button
           type="submit"
           className="w-16 rounded-md bg-slate-700 text-white hover:bg-slate-600 py-1 mx-1"
+          onClick={handleDelete}
         >
           Delete
         </button>
