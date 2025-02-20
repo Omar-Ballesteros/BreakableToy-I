@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -17,9 +18,9 @@ public class Todo {
     private String todoText;
     private LocalDate dueDate;
     private Boolean done;
-    private LocalDate doneDate;
+    private LocalDateTime doneDate;
     private String priority;
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
 
     public Todo(String todoText, LocalDate dueDate, boolean b, String priority) {
         this.id = UUID.randomUUID().toString();
@@ -28,6 +29,6 @@ public class Todo {
         this.done = false;
         this.doneDate = null;
         this.priority = priority;
-        this.creationDate = LocalDate.now();
+        this.creationDate = LocalDateTime.now();
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class TodoController {
         Todo todo = todoService.searchTodoById(id);
 
         todo.setDone(true);
-        todo.setDoneDate(LocalDate.now());
+        todo.setDoneDate(LocalDateTime.now());
         todoService.saveTodo(todo);
 
         return ResponseEntity.ok(todo);
@@ -85,7 +85,7 @@ public class TodoController {
     deleteTodo(@PathVariable String id){
         Todo todo = todoService.searchTodoById(id);
         if(todo == null)
-            throw new ResourceNotFoundException("The Id recieved does not exist");
+            throw new ResourceNotFoundException("The Id received does not exist");
         todoService.deleteTodo(todo);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);

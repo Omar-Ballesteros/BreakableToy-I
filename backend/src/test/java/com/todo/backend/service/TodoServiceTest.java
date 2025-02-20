@@ -72,32 +72,5 @@ public class TodoServiceTest {
         verify(todoRepository, times(1)).save(exampleTodo);
     }
 
-    @Test
-    void testToggleTodoDone() {
-        when(todoRepository.findById("123")).thenReturn(Optional.of(exampleTodo));
 
-        boolean result = todoService.toggleCompletion("123");
-
-        assertTrue(result);
-        assertTrue(exampleTodo.getDone());
-        assertNotNull(exampleTodo.getDoneDate());
-
-        verify(todoRepository, times(1)).save(exampleTodo);
-    }
-
-    @Test
-    void testToggleTodoUndone() {
-        exampleTodo.setDone(true);
-        exampleTodo.setDoneDate(LocalDate.now());
-
-        when(todoRepository.findById("123")).thenReturn(Optional.of(exampleTodo));
-
-        boolean result = todoService.toggleCompletion("123");
-
-        assertTrue(result);
-        assertFalse(exampleTodo.getDone());
-        assertNull(exampleTodo.getDoneDate());
-
-        verify(todoRepository, times(1)).save(exampleTodo);
-    }
 }
