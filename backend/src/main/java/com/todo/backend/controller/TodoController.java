@@ -29,6 +29,7 @@ public class TodoController {
 
     @PostMapping
     public Todo createTodo(@RequestBody Todo todo) {
+        todo.setDone(false);
         return todoService.saveTodo(todo);
     }
 
@@ -50,7 +51,6 @@ public class TodoController {
         todo.setTodoText(updatedTodo.getTodoText());
         todo.setDueDate(updatedTodo.getDueDate());
         todo.setPriority(updatedTodo.getPriority());
-        todo.setDone(updatedTodo.getDone());
         todoService.saveTodo(todo);
         return ResponseEntity.ok(todo);
     }
