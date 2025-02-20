@@ -1,17 +1,36 @@
 import TodoItem from "./TodoItem";
 import { useTodoContext } from "../context/TodoContext";
 import { useState } from "react";
+import { useSearchContext } from "../context/SearchContext";
 
 const ITEMS_PER_PAGE = 10;
 
 export default function TodoList() {
+  const { search, priorityFilter, stateFilter } = useSearchContext();
+
   const { todos } = useTodoContext();
+
+  const filteredTodos = todos.filter((todo) => {
+    const matchesSearch = todo.todoText
+      .toLowerCase()
+      .includes(search.toLowerCase().trim());
+
+    const matchesPriority =
+      priorityFilter === "all" || todo.priority === priorityFilter;
+
+    const matchesState =
+      stateFilter === "all" ||
+      (stateFilter === "done" ? todo.done : !todo.done);
+
+    return matchesSearch && matchesPriority && matchesState;
+  });
+
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(todos.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredTodos.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const displayedTodos = todos.slice(startIndex, endIndex);
+  const displayedTodos = filteredTodos.slice(startIndex, endIndex);
 
   const getPaginationNumbers = () => {
     const pages = [];
