@@ -26,6 +26,7 @@ export default function TodoItem({ todo }: TodoItemProps) {
         await setAsDone(todo.id);
       }
       setIsDone(!isDone);
+      refetchTodos();
     } catch (error) {
       console.error("Error changing todo state", error);
     }
@@ -50,10 +51,28 @@ export default function TodoItem({ todo }: TodoItemProps) {
           onChange={handleToggleDone}
         />
       </td>
-      <td className="p-4 border border-gray-400">{todo.todoText}</td>
-      <td className="p-4 border border-gray-400">{todo.priority}</td>
-      <td className="p-4 border border-gray-400">{todo.dueDate}</td>
-      <td className="p-4 border border-gray-400 px-1">
+      <td
+        className={`p-4 border border-gray-400 ${
+          isDone ? "font-bold" : "font-light"
+        }`}
+      >
+        {todo.todoText}
+      </td>
+      <td
+        className={`p-4 border border-gray-400 ${
+          isDone ? "font-bold" : "font-light"
+        }`}
+      >
+        {todo.priority}
+      </td>
+      <td
+        className={`p-4 border border-gray-400 ${
+          isDone ? "font-bold" : "font-light"
+        }`}
+      >
+        {todo.dueDate}
+      </td>
+      <td className="p-4 border border-gray-400 px-1 ">
         <button
           className="w-16 rounded-md bg-slate-900 text-white hover:bg-slate-800 py-1 mx-1"
           onClick={handleEdit}

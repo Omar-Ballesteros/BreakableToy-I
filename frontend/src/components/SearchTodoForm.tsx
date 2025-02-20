@@ -1,16 +1,34 @@
+import { useState } from "react";
 import { useSearchContext } from "../context/SearchContext";
 
 export default function SearchTodoForm() {
-  const { setSearch, setPriorityFilter, setStateFilter } = useSearchContext();
+  const {
+    setSearch: setSearchGlobal,
+    setPriorityFilter: setPriorityGlobal,
+    setStateFilter: setStateGlobal,
+  } = useSearchContext();
+
+  const [search, setSearch] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("all");
+  const [stateFilter, setStateFilter] = useState("all");
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSearchGlobal(search);
+    setPriorityGlobal(priorityFilter);
+    setStateGlobal(stateFilter);
+    console.log("Si jala");
+  };
 
   return (
-    <form className="grid grid-cols-6 gap-4 my-4">
+    <form className="grid grid-cols-6 gap-4 my-4" onSubmit={handleSearch}>
       <div className="col-start-1 col-end-7 flex">
         <label htmlFor="todoName" className="m-4 max-w-8">
           Name
         </label>
         <input
           type="text"
+          value={search}
           id="todoName"
           placeholder="Text"
           className="grow mx-4 rounded-md border border-gray-600 p-2"
@@ -23,14 +41,15 @@ export default function SearchTodoForm() {
         </label>
         <select
           id="priority"
+          value={priorityFilter}
           autoComplete="All, High, Medium, Low"
           className=" mx-4 rounded-md grow border border-gray-600"
           onChange={(e) => setPriorityFilter(e.target.value)}
         >
-          <option>All</option>
-          <option>High</option>
-          <option>Medium</option>
-          <option>Low</option>
+          <option value="all">All</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
         </select>
       </div>
       <div className="col-start-1 col-end-4 flex">
@@ -39,13 +58,14 @@ export default function SearchTodoForm() {
         </label>
         <select
           id="state"
+          value={stateFilter}
           autoComplete="All, Done, Undone"
           className="mx-4 rounded-md grow border border-gray-600"
           onChange={(e) => setStateFilter(e.target.value)}
         >
-          <option>All</option>
-          <option>Done</option>
-          <option>Undone</option>
+          <option value="all">All</option>
+          <option value="done">Done</option>
+          <option value="undone">Undone</option>
         </select>
       </div>
       <div className="col-span-2 col-end-7 flex flex-row-reverse">
