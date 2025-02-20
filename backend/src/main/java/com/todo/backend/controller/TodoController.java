@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +78,18 @@ public class TodoController {
         todoService.saveTodo(todo);
 
         return ResponseEntity.ok(todo);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Boolean>>
+    deleteTodo(@PathVariable String id){
+        Todo todo = todoService.searchTodoById(id);
+        if(todo == null)
+            throw new ResourceNotFoundException("The Id recieved does not exist");
+        todoService.deleteTodo(todo);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("deleted", Boolean.TRUE);
+        return ResponseEntity.ok(response);
     }
 
 }
