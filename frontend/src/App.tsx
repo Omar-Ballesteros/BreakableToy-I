@@ -27,6 +27,7 @@ function App() {
       <div>
         <TodoList />
       </div>
+      <TaskMetrics />
     </main>
   );
 }
