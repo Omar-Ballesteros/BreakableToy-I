@@ -1,29 +1,29 @@
 import TodoList from "./components/TodoList";
 import SearchTodoForm from "./components/SearchTodoForm";
-import { useState } from "react";
 import AddTodoModal from "./components/AddTodoModal";
+import { useModalContext } from "./context/ModalContext";
 
 function App() {
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { setOpen } = useModalContext();
 
   return (
-    <main className='py-10 h-screen space-y-5 text-center'>
+    <main className="py-10 h-screen space-y-5 text-center">
       <h1 className="text-3xl font-bold text-center">To-do App</h1>
-      <div className=' bg-slate-100 rounded-lg p-5 space-y-5 m-8'>
-        <SearchTodoForm/>
-        </div>
-        <div className="p-4">
-          <button className="bg-black text-white px-4 py-2" onClick={()=> setIsModalOpen(true)}>
-            Add Todo
-          </button>
-          {isModalOpen && <AddTodoModal onClose={() => setIsModalOpen(false)} onAddTodo={function (): void {
-          throw new Error("Function not implemented.");
-        } }/>}
-        </div>
-        <div>
-        <TodoList/>
-        </div>
+      <div className=" bg-slate-100 rounded-lg p-5 space-y-5 m-8">
+        <SearchTodoForm />
+      </div>
+      <div className="p-4">
+        <button
+          className="bg-black text-white px-4 py-2"
+          onClick={() => setOpen(true)}
+        >
+          Add Todo
+        </button>
+        <AddTodoModal />
+      </div>
+      <div>
+        <TodoList />
+      </div>
     </main>
   );
 }
