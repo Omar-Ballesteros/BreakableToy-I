@@ -7,7 +7,6 @@ public class TodoFilterRequest {
     private String search;
     private String priority;
     private Boolean done;
-    private String state;
     private String sortBy = "createdAt";
     private String order = "asc";
     private int page = 0;
