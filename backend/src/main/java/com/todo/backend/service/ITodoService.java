@@ -1,15 +1,18 @@
 package com.todo.backend.service;
 
+import com.todo.backend.dto.TodoFilterRequest;
 import com.todo.backend.model.Todo;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface ITodoService {
-    public List<Todo> listTodos();
 
-    public Todo searchTodoById(String id);
+    Todo searchTodoById(String id);
 
-    public Todo saveTodo(Todo todo);
+    Todo saveTodo(Todo todo);
 
-    public void deleteTodo(Todo todo);
+    void deleteTodo(Todo todo);
+
+    Page<Todo> getFilteredTodos(TodoFilterRequest filter);
 }
