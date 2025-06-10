@@ -26,7 +26,7 @@ public class Todo {
         this.id = UUID.randomUUID().toString();
         this.todoText = todoText;
         this.dueDate = dueDate;
-        this.done = false;
+        this.done = b;
         this.doneDate = null;
         this.priority = priority;
         this.creationDate = LocalDateTime.now();

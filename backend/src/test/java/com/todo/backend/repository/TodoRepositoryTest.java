@@ -47,4 +47,35 @@ class TodoRepositoryTest {
         Optional<Todo> deletedTodo = todoRepository.findById(todo.getId());
         assertFalse(deletedTodo.isPresent());
     }
+
+    @Test
+    void testExistsById_whenExists() {
+        Todo todo = new Todo("Test4", null, false, "Medium");
+        todoRepository.save(todo);
+
+        boolean exists = todoRepository.existsById(todo.getId());
+        assertTrue(exists);
+    }
+
+    @Test
+    void testExistsById_whenNotExists() {
+        boolean exists = todoRepository.existsById("nonexistent-id");
+        assertFalse(exists);
+    }
+
+    @Test
+    void testSave_updatesExistingTodo() {
+        Todo todo = new Todo("Test5", null, false, "High");
+        todoRepository.save(todo);
+
+        // Modify and save again
+        todo.setTodoText("Updated Task");
+        todo.setPriority("Low");
+        todoRepository.save(todo);
+
+        Optional<Todo> updated = todoRepository.findById(todo.getId());
+        assertTrue(updated.isPresent());
+        assertEquals("Updated Task", updated.get().getTodoText());
+        assertEquals("Low", updated.get().getPriority());
+    }
 }

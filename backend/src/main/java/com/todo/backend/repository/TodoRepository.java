@@ -26,6 +26,11 @@ public class TodoRepository {
                 .findFirst();
     }
 
+    public boolean existsById(String id) {
+        return todos.stream()
+                .anyMatch(todo -> todo.getId().equals(id));
+    }
+
     public Todo save(Todo todo) {
 
         for (int i = 0; i < todos.size(); i++) {
