@@ -1,8 +1,10 @@
 package com.todo.backend.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class TodoFilterRequest {
     private String search;
     private String priority;
