@@ -1,15 +1,16 @@
 package com.todo.backend.controller;
 
+import com.todo.backend.dto.TodoFilterRequest;
 import com.todo.backend.exception.ResourceNotFoundException;
 import com.todo.backend.model.Todo;
 import com.todo.backend.service.ITodoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,10 +23,28 @@ public class TodoController {
     @Autowired
     private ITodoService todoService;
 
-    // http://localhost:9090/api/todos
-    @GetMapping
-    public List<Todo> listTodos(){
-        return todoService.listTodos();
+    // http://localhost:9090/api/todos/filter
+    @GetMapping("/filter")
+    public Page<Todo> getFilteredTodos(
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "all") String priority,
+            @RequestParam(required = false) Boolean done,
+            @RequestParam(defaultValue = "dueDate") String sortBy,
+            @RequestParam(defaultValue = "asc") String order,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        TodoFilterRequest filter = TodoFilterRequest.builder()
+                .search(search)
+                .priority(priority)
+                .done(done)
+                .sortBy(sortBy)
+                .order(order)
+                .page(page)
+                .size(size)
+                .build();
+
+        return todoService.getFilteredTodos(filter);
     }
 
     @PostMapping
