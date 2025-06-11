@@ -9,8 +9,9 @@ export interface FilterParams {
   search?: string;
   priority?: string;
   done?: boolean;
-  sortBy?: string;
-  order?: string;
+  // SortBy can be "priority", "dueDate", or empty string for no sorting
+  sortBy?: "priority" | "dueDate" | "title" | "";
+  order?: "asc" | "desc";
   page?: number;
   size?: number;
 }
