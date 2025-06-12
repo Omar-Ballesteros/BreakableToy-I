@@ -1,4 +1,13 @@
 import { useState } from "react";
+import {
+  Grid,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Button,
+} from "@mui/material";
 import { useTodoContext } from "../context/TodoContext";
 
 export default function SearchTodoForm() {
@@ -10,7 +19,6 @@ export default function SearchTodoForm() {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     setFilterParams((prev) => ({
       ...prev,
       search,
@@ -21,66 +29,75 @@ export default function SearchTodoForm() {
           : stateFilter === "done"
           ? true
           : false,
-      page: 0, // reiniciar a la página 1
+      page: 0,
     }));
   };
 
   return (
-    <form className="grid grid-cols-6 gap-4 my-4" onSubmit={handleSearch}>
-      <div className="col-start-1 col-end-7 flex">
-        <label htmlFor="todoName" className="m-4 max-w-8">
-          Name
-        </label>
-        <input
-          type="text"
-          id="todoName"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search tasks..."
-          className="grow mx-4 rounded-md border border-gray-600 p-2"
-        />
-      </div>
+    <form onSubmit={handleSearch}>
+      <Grid container spacing={3}>
+        <Grid size="grow">
+          <TextField
+            fullWidth
+            label="Search tasks"
+            variant="outlined"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </Grid>
 
-      <div className="col-start-1 col-end-4 flex">
-        <label htmlFor="priority" className="m-4 max-w-8">
-          Priority
-        </label>
-        <select
-          id="priority"
-          value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value)}
-          className="mx-4 rounded-md grow border border-gray-600"
-        >
-          <option value="all">All</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-      </div>
+        <Grid size={2}>
+          <FormControl fullWidth>
+            <InputLabel id="priority-label">Priority</InputLabel>
+            <Select
+              labelId="priority-label"
+              id="priority"
+              value={priorityFilter}
+              label="Priority"
+              onChange={(e) => setPriorityFilter(e.target.value)}
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="high">High</MenuItem>
+              <MenuItem value="medium">Medium</MenuItem>
+              <MenuItem value="low">Low</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
 
-      <div className="col-start-1 col-end-4 flex">
-        <label htmlFor="state" className="m-4 max-w-8">
-          State
-        </label>
-        <select
-          id="state"
-          value={stateFilter}
-          onChange={(e) => setStateFilter(e.target.value)}
-          className="mx-4 rounded-md grow border border-gray-600"
+        <Grid size={2}>
+          <FormControl fullWidth>
+            <InputLabel id="state-label">State</InputLabel>
+            <Select
+              labelId="state-label"
+              id="state"
+              value={stateFilter}
+              label="State"
+              onChange={(e) => setStateFilter(e.target.value)}
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="done">Done</MenuItem>
+              <MenuItem value="undone">Undone</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid
+          size={1}
+          display="flex"
+          alignItems="center"
+          justifyContent="flex-end"
         >
-          <option value="all">All</option>
-          <option value="done">Done</option>
-          <option value="undone">Undone</option>
-        </select>
-      </div>
-      <div className="col-span-2 col-end-7 flex flex-row-reverse">
-        <button
-          type="submit"
-          className="mx-4 px-6 rounded-md bg-slate-950 text-white hover:bg-slate-800"
-        >
-          Search
-        </button>
-      </div>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+            sx={{ height: "56px" }}
+          >
+            Search
+          </Button>
+        </Grid>
+      </Grid>
     </form>
   );
 }
