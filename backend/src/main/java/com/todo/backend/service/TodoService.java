@@ -35,23 +35,12 @@ public class TodoService implements ITodoService {
         //Filtering
         List<Todo> filtered = todos.stream()
                 .filter(todo -> filter.getSearch() == null || todo.getTodoText().toLowerCase().contains(filter.getSearch().toLowerCase()))
-                .filter(todo -> filter.getPriority() == null || filter.getPriority().equalsIgnoreCase(todo.getPriority()))
+                .filter(todo -> "all".equalsIgnoreCase(filter.getPriority()) || filter.getPriority().equalsIgnoreCase(todo.getPriority()))
                 .filter(todo -> filter.getDone() == null || filter.getDone().equals(todo.getDone()))
                 .collect(Collectors.toList());
 
         // Sort
-        Comparator<Todo> comparator = Comparator.comparing(todo -> {
-            return switch (filter.getSortBy()) {
-                case "title" -> todo.getTodoText();
-                case "priority" -> todo.getPriority();
-                case "done" -> todo.getDone().toString();
-                default -> todo.getCreationDate().toString();
-            };
-        });
-
-        if ("desc".equalsIgnoreCase(filter.getOrder())) {
-            comparator = comparator.reversed();
-        }
+        Comparator<Todo> comparator = getTodoComparator(filter);
 
         filtered.sort(comparator);
 
@@ -61,6 +50,30 @@ public class TodoService implements ITodoService {
         List<Todo> pageContent = (start < end) ? filtered.subList(start, end) : List.of();
 
         return new PageImpl<>(pageContent, PageRequest.of(filter.getPage(), filter.getSize()), filtered.size());
+    }
+
+    private Comparator<Todo> getTodoComparator(TodoFilterRequest filter) {
+        Comparator<Todo> comparator = switch (filter.getSortBy()) {
+            case "title" -> Comparator.comparing(Todo::getTodoText, String.CASE_INSENSITIVE_ORDER);
+            case "priority" -> Comparator.comparingInt(todo -> mapPriority(todo.getPriority()));
+            case "done" -> Comparator.comparing(todo -> todo.getDone().toString());
+            default -> Comparator.comparing(todo -> todo.getDueDate().toString());
+        };
+
+        if ("desc".equalsIgnoreCase(filter.getOrder())) {
+            comparator = comparator.reversed();
+        }
+        return comparator;
+    }
+
+    //Helper
+    private int mapPriority(String priority) {
+        return switch (priority.toLowerCase()) {
+            case "high" -> 1;
+            case "medium" -> 2;
+            case "low" -> 3;
+            default -> throw new IllegalStateException("Unexpected value: " + priority.toLowerCase());
+        };
     }
 
     @Override
