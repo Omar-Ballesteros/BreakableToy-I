@@ -1,3 +1,15 @@
+import {
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  TableContainer,
+  Button,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useTodoContext } from "../context/TodoContext";
 import TodoItem from "./TodoItem";
 
@@ -37,61 +49,69 @@ export default function TodoList() {
   };
 
   return (
-    <div className="p-4">
-      <table className="w-full table-auto border border-gray-300">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-2 text-center">Done</th>
+    <>
+      <TableContainer component={Paper} sx={{ mt: 2 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Done</TableCell>
+              <TableCell
+                align="center"
+                onClick={() => toggleSort("title")}
+                sx={{ cursor: "pointer", "&:hover": { color: "primary.main" } }}
+              >
+                Title {renderSortIndicator("title")}
+              </TableCell>
+              <TableCell
+                align="center"
+                onClick={() => toggleSort("priority")}
+                sx={{ cursor: "pointer", "&:hover": { color: "primary.main" } }}
+              >
+                Priority {renderSortIndicator("priority")}
+              </TableCell>
+              <TableCell
+                align="center"
+                onClick={() => toggleSort("dueDate")}
+                sx={{ cursor: "pointer", "&:hover": { color: "primary.main" } }}
+              >
+                Due Date {renderSortIndicator("dueDate")}
+              </TableCell>
+              <TableCell align="center">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {todos.map((todo) => (
+              <TodoItem key={todo.id} todo={todo} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-            <th
-              className="px-4 py-2 text-center cursor-pointer hover:text-blue-600"
-              onClick={() => toggleSort("title")}
-            >
-              Title {renderSortIndicator("title")}
-            </th>
-
-            <th
-              className="px-4 py-2 text-center cursor-pointer hover:text-blue-600"
-              onClick={() => toggleSort("priority")}
-            >
-              Priority {renderSortIndicator("priority")}
-            </th>
-
-            <th
-              className="px-4 py-2 text-center cursor-pointer hover:text-blue-600"
-              onClick={() => toggleSort("dueDate")}
-            >
-              Due Date {renderSortIndicator("dueDate")}
-            </th>
-            <th className="px-4 py-2 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {todos.map((todo) => (
-            <TodoItem key={todo.id} todo={todo} />
-          ))}
-        </tbody>
-      </table>
-
-      <div className="flex justify-center space-x-2 mt-4">
-        <button
+      <Stack
+        direction="row"
+        spacing={2}
+        justifyContent="center"
+        alignItems="center"
+        sx={{ mt: 2 }}
+      >
+        <Button
+          variant="outlined"
           onClick={handlePreviousPage}
           disabled={(filterParams.page || 0) === 0}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
         >
           «
-        </button>
-        <span className="px-3 py-1">
+        </Button>
+        <Typography variant="body1">
           Page {(filterParams.page || 0) + 1} of {totalPages}
-        </span>
-        <button
+        </Typography>
+        <Button
+          variant="outlined"
           onClick={handleNextPage}
           disabled={(filterParams.page || 0) >= totalPages - 1}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
         >
           »
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Stack>
+    </>
   );
 }

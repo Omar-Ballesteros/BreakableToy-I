@@ -3,27 +3,33 @@ import { useModalContext } from "../context/ModalContext";
 import { useState } from "react";
 import { deleteTodo, setAsDone, setAsUnDone } from "../api/api";
 import { useTodoContext } from "../context/TodoContext";
+import {
+  TableRow,
+  TableCell,
+  Checkbox,
+  Button,
+  Typography,
+  Box,
+} from "@mui/material";
 
 interface TodoItemProps {
   todo: Todo;
 }
 
-export function getDueDateBgColor(todo: Todo): string {
+export function getDueDateColor(todo: Todo): string {
   const today = new Date();
   const dueDate = todo.dueDate ? new Date(todo.dueDate) : null;
   const daysLeft = dueDate
     ? Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
     : null;
 
-  // 🎨 Aplicar color de fondo según los días restantes
-  let bgColor = "";
   if (daysLeft !== null) {
-    if (daysLeft <= 7) bgColor = "bg-red-300";
-    else if (daysLeft <= 14) bgColor = "bg-yellow-300";
-    else bgColor = "bg-green-300";
+    if (daysLeft <= 7) return "#ef4444"; // rojo
+    if (daysLeft <= 14) return "#facc15"; // amarillo
+    return "#22c55e"; // verde
   }
 
-  return bgColor;
+  return "transparent";
 }
 
 export default function TodoItem({ todo }: TodoItemProps) {
@@ -60,51 +66,103 @@ export default function TodoItem({ todo }: TodoItemProps) {
   };
 
   return (
-    <tr className={`${getDueDateBgColor(todo)}`}>
-      <td className="p-4 border border-gray-400">
-        <input
-          type="checkbox"
-          className="scale-150"
-          checked={isDone}
-          onChange={handleToggleDone}
-        />
-      </td>
-      <td
-        className={`p-4 border border-gray-400 ${
-          isDone ? "font-bold" : "font-light"
-        }`}
-      >
-        {todo.todoText}
-      </td>
-      <td
-        className={`p-4 border border-gray-400 ${
-          isDone ? "font-bold" : "font-light"
-        }`}
-      >
-        {todo.priority}
-      </td>
-      <td
-        className={`p-4 border border-gray-400 ${
-          isDone ? "font-bold" : "font-light"
-        }`}
-      >
-        {todo.dueDate}
-      </td>
-      <td className="p-4 border border-gray-400 px-1 ">
-        <button
-          className="w-16 rounded-md bg-slate-900 text-white hover:bg-slate-800 py-1 mx-1"
+    <TableRow
+      sx={{
+        "&:hover": {
+          backgroundColor: "grey.100",
+          transition: "background-color 0.2s ease-in-out",
+        },
+      }}
+    >
+      {/* Checkbox */}
+      <TableCell align="center" sx={{ width: "5%" }}>
+        <Checkbox checked={isDone} onChange={handleToggleDone} />
+      </TableCell>
+
+      {/* Texto del To-do */}
+      <TableCell align="left" sx={{ width: "40%", pl: 10 }}>
+        <Typography
+          noWrap
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            textDecoration: isDone ? "line-through" : "none",
+            color: isDone ? "grey.800" : "black",
+            fontSize: "1rem",
+          }}
+        >
+          {todo.todoText}
+        </Typography>
+      </TableCell>
+
+      {/* Prioridad */}
+      <TableCell align="center" sx={{ width: "15%" }}>
+        <Typography
+          sx={{
+            textDecoration: isDone ? "line-through" : "none",
+            color: isDone ? "grey.800" : "black",
+            fontSize: "1rem",
+          }}
+        >
+          {todo.priority}
+        </Typography>
+      </TableCell>
+
+      {/* Fecha */}
+      <TableCell align="center" sx={{ width: "20%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+          }}
+        >
+          {!isDone && (
+            <Box
+              sx={{
+                width: 12,
+                height: 12,
+                borderRadius: "50%",
+                backgroundColor: getDueDateColor(todo),
+                flexShrink: 0,
+              }}
+            />
+          )}
+          <Typography
+            sx={{
+              textDecoration: isDone ? "line-through" : "none",
+              color: isDone ? "grey.800" : "black",
+              fontSize: "1rem",
+            }}
+          >
+            {todo.dueDate}
+          </Typography>
+        </Box>
+      </TableCell>
+
+      {/* Botones */}
+      <TableCell align="center" sx={{ width: "20%" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
           onClick={handleEdit}
+          sx={{ mx: 0.5 }}
         >
           Edit
-        </button>
-        <button
-          type="submit"
-          className="w-16 rounded-md bg-slate-700 text-white hover:bg-slate-600 py-1 mx-1"
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="small"
           onClick={handleDelete}
+          sx={{ mx: 0.5 }}
         >
           Delete
-        </button>
-      </td>
-    </tr>
+        </Button>
+      </TableCell>
+    </TableRow>
   );
 }
