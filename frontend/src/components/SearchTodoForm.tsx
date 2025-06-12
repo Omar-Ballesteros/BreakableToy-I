@@ -1,12 +1,8 @@
 import { useState } from "react";
-import { useSearchContext } from "../context/SearchContext";
+import { useTodoContext } from "../context/TodoContext";
 
 export default function SearchTodoForm() {
-  const {
-    setSearch: setSearchGlobal,
-    setPriorityFilter: setPriorityGlobal,
-    setStateFilter: setStateGlobal,
-  } = useSearchContext();
+  const { setFilterParams } = useTodoContext();
 
   const [search, setSearch] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -14,10 +10,19 @@ export default function SearchTodoForm() {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSearchGlobal(search);
-    setPriorityGlobal(priorityFilter);
-    setStateGlobal(stateFilter);
-    console.log("Si jala");
+
+    setFilterParams((prev) => ({
+      ...prev,
+      search,
+      priority: priorityFilter,
+      done:
+        stateFilter === "all"
+          ? undefined
+          : stateFilter === "done"
+          ? true
+          : false,
+      page: 0, // reiniciar a la página 1
+    }));
   };
 
   return (
@@ -28,13 +33,14 @@ export default function SearchTodoForm() {
         </label>
         <input
           type="text"
-          value={search}
           id="todoName"
-          placeholder="Text"
-          className="grow mx-4 rounded-md border border-gray-600 p-2"
+          value={search}
           onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search tasks..."
+          className="grow mx-4 rounded-md border border-gray-600 p-2"
         />
       </div>
+
       <div className="col-start-1 col-end-4 flex">
         <label htmlFor="priority" className="m-4 max-w-8">
           Priority
@@ -42,9 +48,8 @@ export default function SearchTodoForm() {
         <select
           id="priority"
           value={priorityFilter}
-          autoComplete="All, High, Medium, Low"
-          className=" mx-4 rounded-md grow border border-gray-600"
           onChange={(e) => setPriorityFilter(e.target.value)}
+          className="mx-4 rounded-md grow border border-gray-600"
         >
           <option value="all">All</option>
           <option value="high">High</option>
@@ -52,6 +57,7 @@ export default function SearchTodoForm() {
           <option value="low">Low</option>
         </select>
       </div>
+
       <div className="col-start-1 col-end-4 flex">
         <label htmlFor="state" className="m-4 max-w-8">
           State
@@ -59,9 +65,8 @@ export default function SearchTodoForm() {
         <select
           id="state"
           value={stateFilter}
-          autoComplete="All, Done, Undone"
-          className="mx-4 rounded-md grow border border-gray-600"
           onChange={(e) => setStateFilter(e.target.value)}
+          className="mx-4 rounded-md grow border border-gray-600"
         >
           <option value="all">All</option>
           <option value="done">Done</option>
@@ -71,7 +76,7 @@ export default function SearchTodoForm() {
       <div className="col-span-2 col-end-7 flex flex-row-reverse">
         <button
           type="submit"
-          className="mx-4 px-6 align-middle rounded-md bg-slate-950 text-white hover:bg-slate-800 "
+          className="mx-4 px-6 rounded-md bg-slate-950 text-white hover:bg-slate-800"
         >
           Search
         </button>
