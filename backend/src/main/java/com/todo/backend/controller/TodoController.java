@@ -1,5 +1,6 @@
 package com.todo.backend.controller;
 
+import com.todo.backend.dto.TimeMetricsResponse;
 import com.todo.backend.dto.TodoFilterRequest;
 import com.todo.backend.exception.ResourceNotFoundException;
 import com.todo.backend.model.Todo;
@@ -111,4 +112,8 @@ public class TodoController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/metrics/average-time")
+    public ResponseEntity<TimeMetricsResponse> getAverageTime() {
+        return ResponseEntity.ok(todoService.calculateAverageTime());
+    }
 }

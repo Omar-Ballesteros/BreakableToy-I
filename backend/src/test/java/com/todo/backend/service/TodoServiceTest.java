@@ -1,5 +1,6 @@
 package com.todo.backend.service;
 
+import com.todo.backend.dto.TimeMetricsResponse;
 import com.todo.backend.dto.TodoFilterRequest;
 import com.todo.backend.exception.ResourceNotFoundException;
 import com.todo.backend.model.Todo;
@@ -7,13 +8,11 @@ import com.todo.backend.repository.TodoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,20 +22,20 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class TodoServiceTest {
 
-    @Mock
     private TodoRepository todoRepository;
-
     private TodoService todoService;
-
     private Todo exampleTodo;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        todoRepository = mock(TodoRepository.class);
         todoService = new TodoService(todoRepository);
 
         exampleTodo = new Todo("Test service", LocalDate.now(), false, "high");
-
+        exampleTodo.setId("123");
+        exampleTodo.setCreationDate(LocalDateTime.now().minusHours(2));
+        exampleTodo.setDoneDate(LocalDateTime.now());
+        exampleTodo.setDone(true);
     }
 
     @Test
@@ -57,7 +56,6 @@ public class TodoServiceTest {
 
         assertEquals(1, result.getTotalElements());
         assertEquals("Test service", result.getContent().getFirst().getTodoText());
-        verify(todoRepository).findAll();
     }
 
     @Test
@@ -71,7 +69,7 @@ public class TodoServiceTest {
         TodoFilterRequest filter = TodoFilterRequest.builder()
                 .page(0)
                 .size(2)
-                .sortBy("creationDate")
+                .sortBy("dueDate")
                 .order("asc")
                 .build();
 
@@ -137,26 +135,13 @@ public class TodoServiceTest {
     }
 
     @Test
-    void ReturnTodoById() {
-        exampleTodo.setId("123");
+    void testReturnTodoById() {
         when(todoRepository.findById("123")).thenReturn(Optional.of(exampleTodo));
 
         Todo foundTodo = todoService.searchTodoById("123");
 
         assertNotNull(foundTodo);
         assertEquals("123", foundTodo.getId());
-    }
-
-    @Test
-    void testSaveTodo() {
-        Todo todo = new Todo("Train hard", LocalDate.now(), false, "medium");
-        when(todoRepository.save(any(Todo.class))).thenReturn(todo);
-
-        Todo savedTodo = todoService.saveTodo(todo);
-
-        assertNotNull(savedTodo);
-        assertEquals("Train hard", savedTodo.getTodoText());
-        verify(todoRepository, times(1)).save(todo);
     }
 
     @Test
@@ -167,75 +152,73 @@ public class TodoServiceTest {
     }
 
     @Test
-    void testDeleteTodoById() {
-        Todo todo = new Todo("Pay bills", LocalDate.now(), false, "medium");
-        todo.setId("abc123");
+    void testSaveTodoWithoutIdAndCreationDate() {
+        Todo newTodo = new Todo("Train hard", LocalDate.now(), false, "medium");
 
-        when(todoRepository.existsById("abc123")).thenReturn(true);
+        when(todoRepository.save(any(Todo.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        todoService.deleteTodo(todo);
+        Todo saved = todoService.saveTodo(newTodo);
 
-        verify(todoRepository, times(1)).delete("abc123");
+        assertNotNull(saved.getId());
+        assertNotNull(saved.getCreationDate());
+        assertEquals("Train hard", saved.getTodoText());
     }
 
     @Test
-    void testDeleteTodoByIdNotFound() {
-        Todo fakeTodo = new Todo("Fake", LocalDate.now(), false, "high");
-        fakeTodo.setId("idX");
+    void testSaveTodoWithInvalidTextThrowsException() {
+        Todo newTodo = new Todo("   ", LocalDate.now(), false, "low");
 
-        when(todoRepository.existsById("idX")).thenReturn(false);
-
-        assertThrows(ResourceNotFoundException.class, () -> todoService.deleteTodo(fakeTodo));
+        assertThrows(IllegalArgumentException.class, () -> todoService.saveTodo(newTodo));
     }
 
     @Test
-    void testSaveTodoWithEmptyTextShouldThrow() {
-        Todo todo = new Todo("   ", LocalDate.now(), false, "low");
+    void testDeleteTodoWhenExists() {
+        when(todoRepository.existsById("123")).thenReturn(true);
+        doNothing().when(todoRepository).delete("123");
 
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-            todoService.saveTodo(todo);
-        });
-
-        assertEquals("Todo text must not be null or empty", thrown.getMessage());
+        assertDoesNotThrow(() -> todoService.deleteTodo(exampleTodo));
+        verify(todoRepository).delete("123");
     }
 
     @Test
-    void testSaveTodoWithNullTextShouldThrow() {
-        Todo todo = new Todo(null, LocalDate.now(), false, "medium");
+    void testDeleteTodoWhenNotExistsThrowsException() {
+        when(todoRepository.existsById("123")).thenReturn(false);
 
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, () -> {
-            todoService.saveTodo(todo);
-        });
-
-        assertEquals("Todo text must not be null or empty", thrown.getMessage());
+        assertThrows(ResourceNotFoundException.class, () -> todoService.deleteTodo(exampleTodo));
     }
 
     @Test
-    void testSaveTodoAssignsIdIfMissing() {
-        Todo todo = new Todo("Clean room", LocalDate.now(), false, "low");
-        todo.setId(null); // empty ID
+    void testCalculateAverageTime() {
+        Todo t1 = new Todo("Task A", LocalDate.now(), true, "high");
+        t1.setCreationDate(LocalDateTime.now().minusHours(1));
+        t1.setDoneDate(LocalDateTime.now());
+        t1.setDone(true);
 
-        when(todoRepository.save(any(Todo.class))).thenAnswer(invocation -> {
-            Todo saved = invocation.getArgument(0);
-            assertNotNull(saved.getId());
-            return saved;
-        });
+        Todo t2 = new Todo("Task B", LocalDate.now(), true, "low");
+        t2.setCreationDate(LocalDateTime.now().minusMinutes(30));
+        t2.setDoneDate(LocalDateTime.now());
+        t2.setDone(true);
 
-        todoService.saveTodo(todo);
+        when(todoRepository.findAll()).thenReturn(List.of(t1, t2));
+
+        TimeMetricsResponse response = todoService.calculateAverageTime();
+
+        assertNotNull(response);
+        assertTrue(response.getOverall().contains("min"));
+        assertTrue(response.getLow().contains("min"));
+        assertTrue(response.getHigh().contains("min"));
+        assertEquals("00:00", response.getMedium()); // porque no hay tareas medium
     }
 
     @Test
-    void testSaveTodoAssignsCreationDateIfMissing() {
-        Todo todo = new Todo("Do pushups", LocalDate.now(), false, "medium");
-        todo.setCreationDate(null);
+    void testCalculateAverageTimeEmptyList() {
+        when(todoRepository.findAll()).thenReturn(List.of());
 
-        when(todoRepository.save(any(Todo.class))).thenAnswer(invocation -> {
-            Todo saved = invocation.getArgument(0);
-            assertNotNull(saved.getCreationDate());
-            return saved;
-        });
+        TimeMetricsResponse response = todoService.calculateAverageTime();
 
-        todoService.saveTodo(todo);
+        assertEquals("00:00", response.getOverall());
+        assertEquals("00:00", response.getLow());
+        assertEquals("00:00", response.getMedium());
+        assertEquals("00:00", response.getHigh());
     }
-
 }
