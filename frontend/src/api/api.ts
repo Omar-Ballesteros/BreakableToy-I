@@ -16,6 +16,20 @@ export interface FilterParams {
   size?: number;
 }
 
+export interface TimeMetricsResponse {
+  overall: string; // Overall time spent
+  low: string; // Time spent on low priority tasks
+  medium: string; // Time spent on medium priority tasks
+  high: string; // Time spent on high priority tasks
+}
+
+export const fetchTimeMetrics = async (): Promise<TimeMetricsResponse> => {
+  const response = await axios.get<TimeMetricsResponse>(
+    `${API_URL}/metrics/average-time`
+  );
+  return response.data;
+};
+
 export const getFilteredTodos = async (params: FilterParams) => {
   const response = await axios.get<Page<Todo>>(`${API_URL}/filter`, {
     params,
