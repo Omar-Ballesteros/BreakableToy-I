@@ -16,11 +16,14 @@ The project follows a _full-stack architecture_ with:
 
 ## Features
 
-- ✅ _todo CRUD:_ Create, read, update, and delete todos.
-- 🔍 _Search & Filter:_ Search by name, filter by priority and status.
-- 📅 _Sorting:_ Sort todos by priority and due date.
-- 📊 _todo Metrics:_ Track average completion time for todos.
-- 🎨 _UI:_ Styled with TailwindCSS for a clean and responsive design.
+- ✅ _Todo CRUD_: Create, read, update, and delete todos.
+- 🔍 _Search & Filter_: Search by name, filter by priority (low, medium, high) and status (done/undone).
+- 📅 _Sorting_: Sort todos by due date or priority (ascending or descending).
+- 🧭 _Pagination_: Navigate through todos with client-side pagination.
+- ✔️ _Toggle Completion_: Mark todos as done or undone.
+- 📊 _Metrics_: Track average completion time for todos.
+- 🎨 _Responsive UI_: Built with Material UI for a clean and modern layout.
+- 🧪 _Data Seeder_: Auto-generates sample todos for testing.
 
 ## Installation & Setup
 
@@ -51,15 +54,18 @@ The frontend will start on http://localhost:8080 .
 
 ## API Endpoints
 
-| Method | Endpoint     | Description           |
-| ------ | ------------ | --------------------- |
-| GET    |              | Fetch all todos       |
-| POST   |              | Create a new todo     |
-| GET    | /{id}        | Search todos by Id    |
-| PUT    | /{id}        | Update a todo         |
-| DELETE | /{id}        | Delete a todo         |
-| POST   | /{id}/done   | Mark a todo as done   |
-| PUT    | /{id}/undone | Mark a todo as undone |
+## API Endpoints
+
+| Method | Endpoint                        | Description                                                             |
+| ------ | ------------------------------- | ----------------------------------------------------------------------- |
+| GET    | /api/todos/filter               | Filter and list todos by search, priority, state, order, and pagination |
+| POST   | /api/todos                      | Create a new todo                                                       |
+| GET    | /api/todos/{id}                 | Retrieve a todo by its Id                                               |
+| PUT    | /api/todos/{id}                 | Update a todo                                                           |
+| DELETE | /api/todos/{id}                 | Delete a todo                                                           |
+| POST   | /api/todos/{id}/done            | Mark a todo as done                                                     |
+| PUT    | /api/todos/{id}/undone          | Mark a todo as not done                                                 |
+| GET    | /api/todos/metrics/average-time | Get the average resolution time for todos                               |
 
 ## Project Structure
 
@@ -87,3 +93,20 @@ frontend/
 │   ├── api/             # Axios requests to backend
 │   ├── App.tsx          # Main application component
 ```
+
+## Running Tests
+
+### Backend (Spring Boot)
+
+To execute the backend tests:
+
+```bash
+cd backend
+mvn test
+```
+
+This command will:
+
+- Compile your application.
+- Run all JUnit and Spring Test suites.
+- Display a report with the results in your terminal
